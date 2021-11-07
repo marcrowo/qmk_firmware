@@ -18,8 +18,8 @@
 enum layers {
   BASE,
   EXTEND,
-  FUNCTION,
   SYMBOL,
+  FUNCTION,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -37,17 +37,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
-  [FUNCTION] = LAYOUT(
-    KC_GRV,        KC_TILD,       KC_BSLS,       KC_PIPE,       KC_NO,  KC_TRNS, KC_F12, KC_F7, KC_F8, KC_F9, RESET,
-    OSM(MOD_LSFT), OSM(MOD_LCTL), OSM(MOD_LGUI), OSM(MOD_LALT), KC_NO,           KC_F11, KC_F4, KC_F5, KC_F6, KC_NO,
-    KC_NO,         KC_NO,         KC_NO,         KC_NO,         KC_NO,           KC_F10, KC_F1, KC_F2, KC_F3, KC_NO,
-    // THUMB ROW
-    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
-  ),
   [SYMBOL] = LAYOUT(
     KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_TRNS, KC_EQL,  KC_7,   KC_8, KC_9, KC_PLUS,
     KC_QUOT, KC_DQUO, KC_LCBR, KC_LPRN, KC_LBRC,          KC_ASTR, KC_4,   KC_5, KC_6, KC_MINS,
     KC_CIRC, KC_AMPR, KC_RCBR, KC_RPRN, KC_RBRC,          KC_0,    KC_1,   KC_2, KC_3, KC_SLSH,
+    // THUMB ROW
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+  ),
+  [FUNCTION] = LAYOUT(
+    KC_GRV,        KC_TILD,       KC_BSLS,       KC_PIPE,       KC_NO,  KC_TRNS, KC_F12, KC_F7, KC_F8, KC_F9, RESET,
+    OSM(MOD_LSFT), OSM(MOD_LCTL), OSM(MOD_LGUI), OSM(MOD_LALT), KC_NO,           KC_F11, KC_F4, KC_F5, KC_F6, KC_NO,
+    KC_NO,         KC_NO,         KC_NO,         KC_NO,         KC_NO,           KC_F10, KC_F1, KC_F2, KC_F3, KC_NO,
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
@@ -87,10 +87,10 @@ static void render_layer_status(void) {
       oled_write_ln_P(PSTR("BASE"), false);
       break;
     case EXTEND:
-      oled_write_ln_P(PSTR("EXTEND"), false);
+      oled_write_ln_P(PSTR("EXT"), false);
       break;
     case FUNCTION:
-      oled_write_ln_P(PSTR("FUNCTION"), false);
+      oled_write_ln_P(PSTR("FUNC"), false);
       break;
     case SYMBOL:
       oled_write_ln_P(PSTR("SYM"), false);

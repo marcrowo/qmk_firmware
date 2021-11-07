@@ -113,8 +113,8 @@ void render_mod_status(uint8_t modifiers) {
   oled_write_P(PSTR("-----"), false);
   oled_write_ln_P(PSTR("SHFT"), (modifiers & MOD_MASK_SHIFT));
   oled_write_ln_P(PSTR("CTRL"), (modifiers & MOD_MASK_CTRL));
-  oled_write_ln_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
   oled_write_ln_P(PSTR("GUI"), (modifiers & MOD_MASK_GUI));
+  oled_write_ln_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
 }
 
 void oled_task_user(void) {

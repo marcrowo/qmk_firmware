@@ -24,9 +24,9 @@ enum layers {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT(
-    KC_Q, KC_W, KC_E,  KC_R,  KC_T, RGB_TOG, KC_Y, KC_U, KC_I,    KC_O,   KC_P,
-    KC_A, KC_S, KC_D,  KC_F,  KC_G,          KC_H, KC_J, KC_K,    KC_L,   KC_SCLN,
-    KC_Z, KC_X, KC_C,  KC_V,  KC_B,          KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH,
+    KC_Q, KC_W, KC_E,  KC_R,  KC_T, KC_NO, KC_Y, KC_U, KC_I,    KC_O,   KC_P,
+    KC_A, KC_S, KC_D,  KC_F,  KC_G,        KC_H, KC_J, KC_K,    KC_L,   KC_SCLN,
+    KC_Z, KC_X, KC_C,  KC_V,  KC_B,        KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH,
     // THUMB ROW
     MO(EXTEND), KC_LSFT, KC_SPC, MO(SYMBOL)
   ),
@@ -46,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [FUNCTION] = LAYOUT(
     KC_GRV,        KC_TILD,       KC_BSLS,       KC_PIPE,       KC_NO,  KC_TRNS, KC_F12, KC_F7, KC_F8, KC_F9, RESET,
-    OSM(MOD_LSFT), OSM(MOD_LCTL), OSM(MOD_LGUI), OSM(MOD_LALT), KC_NO,           KC_F11, KC_F4, KC_F5, KC_F6, KC_NO,
+    OSM(MOD_LSFT), OSM(MOD_LCTL), OSM(MOD_LGUI), OSM(MOD_LALT), KC_NO,           KC_F11, KC_F4, KC_F5, KC_F6, RGB_TOG,
     KC_NO,         KC_NO,         KC_NO,         KC_NO,         KC_NO,           KC_F10, KC_F1, KC_F2, KC_F3, KC_NO,
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS

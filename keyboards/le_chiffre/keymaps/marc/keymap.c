@@ -15,18 +15,108 @@
  */
 #include QMK_KEYBOARD_H
 
+#include "oneshot.h"
+
 enum layers {
-  BASE
+  BASE,
+  EXTEND,
+  SYMBOL,
+  FUNCTION,
+};
+
+enum keycodes {
+  // Custom oneshot mod implementation with no timers.
+  OS_SHFT = SAFE_RANGE,
+  OS_CTRL,
+  OS_ALT,
+  OS_GUI,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [BASE] = LAYOUT(
-    KC_Q, KC_W, KC_E,  KC_R,    KC_T, RESET, KC_Y,   KC_U,  KC_I,    KC_O,   KC_P,
-    KC_A, KC_S, KC_D,  KC_F,    KC_G,        KC_H,   KC_J,  KC_K,    KC_L,   KC_SCLN,
-    KC_Z, KC_X, KC_C,  KC_V,    KC_B,        KC_N,   KC_M,  KC_COMM, KC_DOT, KC_SLSH,
-                KC_NO, KC_LSFT,              KC_SPC, KC_NO
-  )
+    KC_Q, KC_W, KC_E,  KC_R,  KC_T, KC_NO, KC_Y, KC_U, KC_I,    KC_O,   KC_P,
+    KC_A, KC_S, KC_D,  KC_F,  KC_G,        KC_H, KC_J, KC_K,    KC_L,   KC_SCLN,
+    KC_Z, KC_X, KC_C,  KC_V,  KC_B,        KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH,
+    // THUMB ROW
+    MO(EXTEND), KC_LSFT, KC_SPC, MO(SYMBOL)
+  ),
+  [EXTEND] = LAYOUT(
+    KC_ESC,  KC_MUTE, KC_VOLD, KC_VOLU, KC_NO, KC_TRNS, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_CAPS,
+    OS_SHFT, OS_CTRL, OS_GUI,  OS_ALT,  KC_NO,          KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,
+    KC_TAB,  KC_MPRV, KC_MPLY, KC_MNXT, KC_NO,          KC_ENT,  KC_BSPC, KC_NO,   KC_NO,   KC_NO,
+    // THUMB ROW
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+  ),
+  [SYMBOL] = LAYOUT(
+    KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_TRNS, KC_EQL,  KC_7,   KC_8, KC_9, KC_PLUS,
+    KC_QUOT, KC_DQUO, KC_LCBR, KC_LPRN, KC_LBRC,          KC_ASTR, KC_4,   KC_5, KC_6, KC_MINS,
+    KC_CIRC, KC_AMPR, KC_RCBR, KC_RPRN, KC_RBRC,          KC_0,    KC_1,   KC_2, KC_3, KC_SLSH,
+    // THUMB ROW
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+  ),
+  [FUNCTION] = LAYOUT(
+    KC_GRV,  KC_TILD, KC_BSLS, KC_PIPE, KC_UNDS,  KC_TRNS, KC_F12, KC_F7, KC_F8, KC_F9, RESET,
+    OS_SHFT, OS_CTRL, OS_GUI,  OS_ALT,  KC_NO,             KC_F11, KC_F4, KC_F5, KC_F6, RGB_TOG,
+    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,             KC_F10, KC_F1, KC_F2, KC_F3, KC_NO,
+    // THUMB ROW
+    KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+  ),
 };
+
+bool is_oneshot_cancel_key(uint16_t keycode) {
+    switch (keycode) {
+    case MO(EXTEND):
+    case MO(SYMBOL):
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool is_oneshot_ignored_key(uint16_t keycode) {
+    switch (keycode) {
+    case MO(EXTEND):
+    case MO(SYMBOL):
+    case KC_LSFT:
+    case OS_SHFT:
+    case OS_CTRL:
+    case OS_ALT:
+    case OS_GUI:
+        return true;
+    default:
+        return false;
+    }
+}
+
+oneshot_state os_shft_state = os_up_unqueued;
+oneshot_state os_ctrl_state = os_up_unqueued;
+oneshot_state os_alt_state = os_up_unqueued;
+oneshot_state os_gui_state = os_up_unqueued;
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    update_oneshot(
+        &os_shft_state, KC_LSFT, OS_SHFT,
+        keycode, record
+    );
+    update_oneshot(
+        &os_ctrl_state, KC_LCTL, OS_CTRL,
+        keycode, record
+    );
+    update_oneshot(
+        &os_alt_state, KC_LALT, OS_ALT,
+        keycode, record
+    );
+    update_oneshot(
+        &os_gui_state, KC_LGUI, OS_GUI,
+        keycode, record
+    );
+
+    return true;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+  return update_tri_layer_state(state, EXTEND, SYMBOL, FUNCTION);
+}
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
   if (index == 0) {
@@ -57,8 +147,17 @@ static void render_layer_status(void) {
     case BASE:
       oled_write_ln_P(PSTR("BASE"), false);
       break;
+    case EXTEND:
+      oled_write_ln_P(PSTR("EXT"), false);
+      break;
+    case FUNCTION:
+      oled_write_ln_P(PSTR("FUNC"), false);
+      break;
+    case SYMBOL:
+      oled_write_ln_P(PSTR("SYM"), false);
+      break;
     default:
-      oled_write_ln_P(PSTR("?????"), false);
+      oled_write_ln_P(PSTR("?"), false);
   }
 }
 
@@ -75,8 +174,8 @@ void render_mod_status(uint8_t modifiers) {
   oled_write_P(PSTR("-----"), false);
   oled_write_ln_P(PSTR("SHFT"), (modifiers & MOD_MASK_SHIFT));
   oled_write_ln_P(PSTR("CTRL"), (modifiers & MOD_MASK_CTRL));
-  oled_write_ln_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
   oled_write_ln_P(PSTR("GUI"), (modifiers & MOD_MASK_GUI));
+  oled_write_ln_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
 }
 
 void oled_task_user(void) {

@@ -19,9 +19,9 @@
 
 enum layers {
   BASE,
-  EXTEND,
-  SYMBOL,
-  FUNCTION,
+  SYM,
+  NAV,
+  NUM,
 };
 
 enum keycodes {
@@ -38,26 +38,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_A, KC_S, KC_D,  KC_F,  KC_G,        KC_H, KC_J, KC_K,    KC_L,   KC_SCLN,
     KC_Z, KC_X, KC_C,  KC_V,  KC_B,        KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH,
     // THUMB ROW
-    MO(EXTEND), KC_LSFT, KC_SPC, MO(SYMBOL)
+    MO(NAV), KC_LSFT, KC_SPC, MO(SYM)
   ),
-  [EXTEND] = LAYOUT(
-    KC_ESC,  KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_TRNS, KC_PGUP, KC_HOME, KC_UP,   KC_END,  KC_CAPS,
-    OS_SHFT, OS_CTRL, OS_GUI,  OS_ALT,  KC_NO,          KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,
-    KC_TAB,  KC_MPRV, KC_MPLY, KC_MNXT, KC_NO,          KC_ENT,  KC_BSPC, KC_NO,   KC_NO,   KC_NO,
+  [SYM] = LAYOUT(
+    KC_ESC,  KC_RBRC,  KC_RCBR, KC_RPRN, KC_TILD, KC_TRNS, KC_CIRC, KC_LPRN, KC_LCBR, KC_LBRC, KC_GRV,
+    KC_MINUS, KC_ASTR, KC_EQL,  KC_MINS, KC_DLR,           KC_HASH, OS_GUI,  OS_ALT,  OS_CTRL, OS_SHFT,
+    KC_PLUS,  KC_PIPE, KC_AT,   KC_QUOT, KC_DQUO,          KC_NO,   KC_PERC, KC_BSLS, KC_AMPR, KC_EXLM,
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
-  [SYMBOL] = LAYOUT(
-    KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_TRNS, KC_EQL,  KC_7,   KC_8, KC_9, KC_PLUS,
-    KC_QUOT, KC_DQUO, KC_LCBR, KC_LPRN, KC_LBRC,          KC_ASTR, KC_4,   KC_5, KC_6, KC_MINS,
-    KC_CIRC, KC_AMPR, KC_RCBR, KC_RPRN, KC_RBRC,          KC_0,    KC_1,   KC_2, KC_3, KC_SLSH,
+  [NAV] = LAYOUT(
+    KC_TAB,  KC_VOLD, KC_MUTE, KC_VOLU, KC_NO, KC_TRNS, RESET,  KC_HOME,  KC_UP,   KC_END,  KC_DEL,
+    OS_SHFT, OS_CTRL, OS_ALT,  OS_GUI,  KC_NO,          KC_CAPS, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,
+    KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_NO,          KC_NO,   KC_PGDN, KC_NO,   KC_PGUP, KC_ENTER,
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
-  [FUNCTION] = LAYOUT(
-    KC_GRV,  KC_TILD, KC_BSLS, KC_PIPE, KC_UNDS,  KC_TRNS, KC_F12, KC_F7, KC_F8, KC_F9, RESET,
-    OS_SHFT, OS_CTRL, OS_GUI,  OS_ALT,  KC_NO,             KC_F11, KC_F4, KC_F5, KC_F6, RGB_TOG,
-    KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_NO,             KC_F10, KC_F1, KC_F2, KC_F3, KC_NO,
+  [NUM] = LAYOUT(
+    KC_1,    KC_2,    KC_3,   KC_4,   KC_5,   KC_TRNS, KC_6,   KC_7,   KC_8,   KC_9,    KC_0,
+    OS_SHFT, OS_CTRL, OS_GUI, OS_ALT, KC_F11,          KC_F12, OS_GUI, OS_ALT, OS_CTRL, OS_SHFT,
+    KC_F1,   KC_F2,   KC_F3,  KC_F4,  KC_F5,           KC_F6,  KC_F7,  KC_F8,  KC_F9,   KC_F10,
     // THUMB ROW
     KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
   ),
@@ -65,8 +65,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
-    case MO(EXTEND):
-    case MO(SYMBOL):
+    case MO(SYM):
+    case MO(NAV):
         return true;
     default:
         return false;
@@ -75,8 +75,8 @@ bool is_oneshot_cancel_key(uint16_t keycode) {
 
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
-    case MO(EXTEND):
-    case MO(SYMBOL):
+    case MO(SYM):
+    case MO(NAV):
     case KC_LSFT:
     case OS_SHFT:
     case OS_CTRL:
@@ -115,7 +115,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, EXTEND, SYMBOL, FUNCTION);
+  return update_tri_layer_state(state, SYM, NAV, NUM);
 }
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
@@ -147,14 +147,14 @@ static void render_layer_status(void) {
     case BASE:
       oled_write_ln_P(PSTR("BASE"), false);
       break;
-    case EXTEND:
-      oled_write_ln_P(PSTR("EXT"), false);
-      break;
-    case FUNCTION:
-      oled_write_ln_P(PSTR("FUNC"), false);
-      break;
-    case SYMBOL:
+    case SYM:
       oled_write_ln_P(PSTR("SYM"), false);
+      break;
+    case NAV:
+      oled_write_ln_P(PSTR("NAV"), false);
+      break;
+    case NUM:
+      oled_write_ln_P(PSTR("NUM"), false);
       break;
     default:
       oled_write_ln_P(PSTR("?"), false);
@@ -174,8 +174,8 @@ void render_mod_status(uint8_t modifiers) {
   oled_write_P(PSTR("-----"), false);
   oled_write_ln_P(PSTR("SHFT"), (modifiers & MOD_MASK_SHIFT));
   oled_write_ln_P(PSTR("CTRL"), (modifiers & MOD_MASK_CTRL));
-  oled_write_ln_P(PSTR("GUI"), (modifiers & MOD_MASK_GUI));
   oled_write_ln_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
+  oled_write_ln_P(PSTR("GUI"), (modifiers & MOD_MASK_GUI));
 }
 
 void oled_task_user(void) {

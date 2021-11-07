@@ -93,10 +93,10 @@ static void render_layer_status(void) {
       oled_write_ln_P(PSTR("FUNCTION"), false);
       break;
     case SYMBOL:
-      oled_write_ln_P(PSTR("SYMBOL"), false);
+      oled_write_ln_P(PSTR("SYM"), false);
       break;
     default:
-      oled_write_ln_P(PSTR("UNKNOWN"), false);
+      oled_write_ln_P(PSTR("?"), false);
   }
 }
 

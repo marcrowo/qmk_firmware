@@ -38,8 +38,10 @@
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  *
  */
+
+// NOTE: default col pin of F7 switched to D2 because of problems with MCU.
 #define MATRIX_ROW_PINS { F4, C6, D7, E6, B4 }
-#define MATRIX_COL_PINS { D1, D0, D4, B6, B2, B3, B1, F7, F6, F5 }
+#define MATRIX_COL_PINS { D1, D0, D4, B6, B2, B3, B1, D2, F6, F5 }
 #define UNUSED_PINS
 
 /* COL2ROW, ROW2COL*/

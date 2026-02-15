@@ -17,7 +17,7 @@
       "rotary": [
         { "pin_a": "GP13", "pin_b": "GP14", "resolution": 4 }
       ]
-    }
+    },
     "matrix_pins": {
         "cols": ["GP5", "GP4", "GP3", "GP2", "GP1", "GP12", "GP11", "GP10", "GP9", "GP6"],
         "rows": ["GP25", "GP15", "GP24", "GP23"]
